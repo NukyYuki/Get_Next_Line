@@ -16,18 +16,29 @@ char	*read_line(int fd, char *stash)
 {
 	int		byte_read;
 	char	*buf;
+	char	*temp;
 
 	buf = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!buf)
 		return (NULL);
 	byte_read = 1;
-	while (byte_read != 0 && ft_strchr(stash, 10) == 0)
+	while (byte_read != 0 && !ft_strchr(stash, '\0'))
 	{
 		byte_read = read(fd, buf, BUFFER_SIZE);
-		buf[byte_read] = '\0';
-		stash = ft_strjoin(stash, buf);
-		if (!stash)
+		if (byte_read == -1)
+		{
+			free(buf);
 			return (NULL);
+		}
+		buf[byte_read] = '\0';
+		temp = stash;
+		stash = ft_strjoin(stash, buf);
+		free(temp);
+		if (!stash)
+		{
+			free(buf)
+			return (NULL);
+		}
 	}
 	free(buf);
 	return (stash);
@@ -37,12 +48,11 @@ char	*write_line(char *stash)
 {
 	char	*line;
 	size_t	i;
-	size_t	len;
 
-	len = 0;
-	while (stash[len] && stash[len] != '\n')
-		len++;
-	line = malloc(sizeof(char) * (len + 2));
+	i = 0;
+	while (stash[i] && stash[i] != '\n')
+		i++;
+	line = malloc(sizeof(char) * (i + 2));
 	if (!line)
 		return (NULL);
 	i = 0;
@@ -67,17 +77,23 @@ char	*rest_stash(char *stash)
 	size_t	i;
 
 	len = 0;
-	while (stash[len] != '\n')
+	while (stash[len] && stash[len] != '\n')
 		len++;
-	temp = malloc(sizeof(char) * (len = 1));
-	if (!temp)
-		return (NULL);
-	i = 0;
-	while (stash[len + i] != '\0')
+	if (!stash[i])
 	{
-		temp[i] = stash[len + i];
-		i++;
+		free(stash);
+		return (NULL);
 	}
+	temp = malloc(sizeof(char) * (ft_strlen(stash) - i + 1));
+	if (!temp)
+	{
+		free(stash);
+		return (NULL);
+	}
+	len++;
+	i = 0;
+	while (stash[len] != '\0')
+		temp[i++] = stash[len++];
 	temp[i] = '\0';
 	free(stash);
 	return (temp);
@@ -88,7 +104,7 @@ char	*get_next_line(int fd)
 	static char	*stash;
 	char		*line;
 
-	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) < 0)
+	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
 	if (!stash)
 	{
@@ -96,12 +112,8 @@ char	*get_next_line(int fd)
 		stash[0] = '\0';
 	}
 	stash = read_line(fd, stash);
-	if (!stash || *stash == '\0')
-	{
-		free(stash);
-		stash = NULL;
+	if (!stash)
 		return (NULL);
-	}
 	line = write_line(stash);
 	stash = rest_stash(stash);
 	return (line);
