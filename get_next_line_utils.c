@@ -6,7 +6,7 @@
 /*   By: mipinhei <mipinhei@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 15:33:55 by mipinhei          #+#    #+#             */
-/*   Updated: 2025/04/17 18:07:04 by mipinhei         ###   ########.fr       */
+/*   Updated: 2025/04/18 13:08:11 by mipinhei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,15 +72,15 @@ char	*ft_strjoin(char *s1, char *s2)
 		return (ft_strdup(s2));
 	if (!s2)
 		return (ft_strdup(s1));
-	res = malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 1));
+	res = malloc(sizeof(char) * ((ft_strlen(s1) + ft_strlen(s2)) + 1));
 	if (!res)
 		return (NULL);
 	i = 0;
 	j = 0;
-	while (i < s1_len)
+	while (s1[i])
 		res[j++] = s1[i++];
 	i = 0;
-	while (i < s2_len && s2[i])
+	while (s2[i])
 		res[j++] = s2[i++];
 	res[j] = '\0';
 	return (res);

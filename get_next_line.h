@@ -6,7 +6,7 @@
 /*   By: mipinhei <mipinhei@student.42porto.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 15:40:17 by mipinhei          #+#    #+#             */
-/*   Updated: 2025/04/17 19:33:32 by mipinhei         ###   ########.fr       */
+/*   Updated: 2025/04/18 16:35:40 by mipinhei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,9 @@ char	*ft_strchr(char *s, int c);
 char	*ft_strjoin(char *s1, char *s2);
 char	*ft_strdup(char *s);
 char	*get_next_line(int fd);
-char	*read_line(int fd, char *stash);
+char	*read_line(int fd, char *stash, char *buf);
 char	*write_line(char *stash);
 char	*rest_stash(char *stash);
+char	*stash_alloc(char *stash);
 
 #endif

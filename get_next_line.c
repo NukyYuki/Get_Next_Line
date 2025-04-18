@@ -6,28 +6,25 @@
 /*   By: mipinhei <mipinhei@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 15:27:10 by mipinhei          #+#    #+#             */
-/*   Updated: 2025/04/17 19:33:55 by mipinhei         ###   ########.fr       */
+/*   Updated: 2025/04/18 16:34:09 by mipinhei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-char	*read_line(int fd, char *stash)
+char	*read_line(int fd, char *stash, char *buf)
 {
 	int		byte_read;
-	char	*buf;
 	char	*temp;
 
-	buf = malloc(sizeof(char) * (BUFFER_SIZE + 1));
-	if (!buf)
-		return (NULL);
 	byte_read = 1;
-	while (byte_read != 0 && !ft_strchr(stash, '\0'))
+	while (byte_read != 0 && !ft_strchr(stash, '\n'))
 	{
 		byte_read = read(fd, buf, BUFFER_SIZE);
 		if (byte_read == -1)
 		{
 			free(buf);
+			free(stash);
 			return (NULL);
 		}
 		buf[byte_read] = '\0';
@@ -36,7 +33,7 @@ char	*read_line(int fd, char *stash)
 		free(temp);
 		if (!stash)
 		{
-			free(buf)
+			free(buf);
 			return (NULL);
 		}
 	}
@@ -79,12 +76,12 @@ char	*rest_stash(char *stash)
 	len = 0;
 	while (stash[len] && stash[len] != '\n')
 		len++;
-	if (!stash[i])
+	if (!stash[len])
 	{
 		free(stash);
 		return (NULL);
 	}
-	temp = malloc(sizeof(char) * (ft_strlen(stash) - i + 1));
+	temp = malloc(sizeof(char) * ((ft_strlen(stash) - len) + 1));
 	if (!temp)
 	{
 		free(stash);
@@ -99,21 +96,39 @@ char	*rest_stash(char *stash)
 	return (temp);
 }
 
+char	*stash_alloc(char *stash)
+{
+	stash = malloc(1);
+	if (!stash)
+		return (NULL);
+	stash[0] = '\0';
+	return (stash);
+}
+
 char	*get_next_line(int fd)
 {
 	static char	*stash;
 	char		*line;
+	char		*buf;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
 	if (!stash)
 	{
-		stash = malloc(1);
-		stash[0] = '\0';
+		stash = stash_alloc(stash);
+		if (!stash)
+			return (NULL);
 	}
-	stash = read_line(fd, stash);
-	if (!stash)
+	buf = malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	if (!buf)
 		return (NULL);
+	stash = read_line(fd, stash, buf);
+	if (!stash || *stash == '\0')
+	{
+		free(stash);
+		stash = NULL;
+		return (NULL);
+	}
 	line = write_line(stash);
 	stash = rest_stash(stash);
 	return (line);
